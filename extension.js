@@ -1,5 +1,27 @@
-'use strict';
+const Twit = require('twit')
+const config = require('./twitter');
+
+const T = new Twit({
+  consumer_key:         config.TWITTER_API_KEY,
+  consumer_secret:      config.TWITTER_API_SECRET,
+  access_token:         config.TWITTER_ACCESS_TOKEN,
+  access_token_secret:  config.TWITTER_ACCESS_TOKEN_SECRET,
+  timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+})
+
+
 
 module.exports = function (nodecg) {
-  const test = nodecg.Replicant('test', {defaultValue: 'hello world'});
+  const twitterFaves = nodecg.Replicant('twitterFaves', {defaultValue: [], persistent: false});
+  const approvedFaves = nodecg.Replicant('approvedFaves', {defaultValue: [], persistent: false});
+
+
+  var stream = T.stream('statuses/filter', { track: 'trump' })
+
+  stream.on('tweet', function (tweet) {
+    if (tweet.text[0] !== 'R' && tweet.text[1] !== 'T') {
+      twitterFaves.value = twitterFaves.value.slice(0, 14);
+      twitterFaves.value.unshift(tweet);
+    }
+  })
 };

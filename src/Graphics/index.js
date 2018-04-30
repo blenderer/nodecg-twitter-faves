@@ -2,10 +2,15 @@ import React, { Component } from 'react';
 import logo from '../logo.svg';
 
 class Graphics extends Component {
+  styles = {
+    tweet: {
+      marginBottom: 15
+    }
+  }
 
-  replicant = window.nodecg.Replicant('test')
+  replicant = window.nodecg.Replicant('approvedFaves')
   state = {
-    value: ''
+    faves: []
   }
 
   componentDidMount() {
@@ -14,18 +19,23 @@ class Graphics extends Component {
 
   onUpdate = (newVal) => {
     this.setState({
-      value: newVal
+      faves: newVal
     });
   }
 
   render() {
-    const { value } = this.state;
+    const { faves } = this.state;
 
     return (
-      <React.Fragment>
-        <img style={{width: 50}} src={`build${logo}`} alt=""/>
-        <h1>{value}</h1>
-      </React.Fragment>
+      <ul>
+        {faves.map((tweet) => (
+          <li key={tweet.id} style={this.styles.tweet}>
+            {tweet.text}
+            <br/>
+            <strong>@{tweet.user.screen_name}</strong>
+          </li>
+        ))}
+      </ul>
     );
   }
 }

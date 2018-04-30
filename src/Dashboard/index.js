@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from '../logo.svg';
 
 class Dashboard extends Component {
   styles = {
@@ -7,21 +6,67 @@ class Dashboard extends Component {
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center'
+    },
+    list: {
+      height: 300,
+      overflowY: 'scroll'
     }
   }
 
-  displayReplicant = window.nodecg.Replicant('test')
+  displayReplicant = window.nodecg.Replicant('test');
+  replicant = window.nodecg.Replicant('twitterFaves');
+  paused = window.nodecg.Replicant('paused');
+
+  state = {
+    faves: [],
+    paused: false
+  };
 
   onChange = (e) => {
     this.displayReplicant.value = e.target.value;
   }
 
+  componentDidMount() {
+    this.replicant.on('change', this.onUpdate);
+  }
+
+  onUpdate = (newVal) => {
+    if (!this.state.paused) {
+      this.setState({
+        faves: newVal
+      });
+    }
+  }
+
+  togglePause = () => {
+    this.setState({
+      paused: !this.state.paused
+    });
+  }
+
   render() {
+    const { faves, paused } = this.state;
+
     return (
-      <div style={this.styles.container}>
-        <img style={{width: 100}} src={`build${logo}`} alt=""/>
-        <input onChange={this.onChange} type="text"/>
-      </div>
+      <React.Fragment>
+        <div style={this.styles.container}>
+          {/* <input onChange={this.onChange} type="text"/> */}
+        </div>
+        <div>
+          <button onClick={this.togglePause}>
+            {paused ? 'Resume' : 'Pause'}
+          </button>
+        </div>
+        <ul style={this.styles.list}>
+          {faves.map((tweet) => (
+            <li key={tweet.id} style={this.styles.tweet}>
+              {tweet.text}
+              <br/>
+              <strong>@{tweet.user.screen_name}</strong>
+            </li>
+          ))}
+        </ul>
+      </React.Fragment>
     );
   }
 }
