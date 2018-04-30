@@ -1,41 +1,52 @@
 import React, { Component } from 'react';
 import logo from '../logo.svg';
+import './style.css';
 
 class Graphics extends Component {
   styles = {
     tweet: {
       marginBottom: 15
+    },
+    container: {
+      backgroundColor: 'purple',
+      color: 'white'
+    },
+    username: {
+      textAlign: 'right'
     }
   }
 
-  replicant = window.nodecg.Replicant('approvedFaves')
+  presentedTweetReplicant = window.nodecg.Replicant('presentedTweet');
+
   state = {
-    faves: []
+    presentedTweet: null
   }
 
   componentDidMount() {
-    this.replicant.on('change', this.onUpdate);
+    this.presentedTweetReplicant.on('change', this.onUpdate);
   }
 
   onUpdate = (newVal) => {
     this.setState({
-      faves: newVal
+      presentedTweet: newVal
     });
   }
 
   render() {
-    const { faves } = this.state;
+    const { presentedTweet } = this.state;
+
+    if (!presentedTweet) {
+      return null;
+    }
 
     return (
-      <ul>
-        {faves.map((tweet) => (
-          <li key={tweet.id} style={this.styles.tweet}>
-            {tweet.text}
-            <br/>
-            <strong>@{tweet.user.screen_name}</strong>
-          </li>
-        ))}
-      </ul>
+      <div style={this.styles.container}>
+        <h1 dangerouslySetInnerHTML={{__html: presentedTweet.text}}>
+        </h1>
+        <h2 style={this.styles.username}>
+          @{presentedTweet.user.screen_name}
+        </h2>
+      </div>
     );
   }
 }

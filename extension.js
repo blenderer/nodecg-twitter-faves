@@ -13,7 +13,7 @@ const T = new Twit({
 
 module.exports = function (nodecg) {
   const twitterFaves = nodecg.Replicant('twitterFaves', {defaultValue: [], persistent: false});
-  const approvedFaves = nodecg.Replicant('approvedFaves', {defaultValue: [], persistent: false});
+  const presentedTweet = nodecg.Replicant('presentedTweet', {defaultValue: null, persistent: true});
 
 
   var stream = T.stream('statuses/filter', { track: 'trump' })
@@ -23,5 +23,9 @@ module.exports = function (nodecg) {
       twitterFaves.value = twitterFaves.value.slice(0, 14);
       twitterFaves.value.unshift(tweet);
     }
-  })
+  });
+
+  nodecg.listenFor('presentTweet', (value) => {
+    presentedTweet.value = value;
+  });
 };

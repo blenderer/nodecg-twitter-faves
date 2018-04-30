@@ -38,6 +38,10 @@ class Dashboard extends Component {
     }
   }
 
+  presentTweet = (tweet) => {
+    window.nodecg.sendMessage('presentTweet', tweet);
+  }
+
   togglePause = () => {
     this.setState({
       paused: !this.state.paused
@@ -63,6 +67,8 @@ class Dashboard extends Component {
               {tweet.text}
               <br/>
               <strong>@{tweet.user.screen_name}</strong>
+              <br/>
+              <button onClick={() => { this.presentTweet(tweet) }}>Present Tweet</button>
             </li>
           ))}
         </ul>
